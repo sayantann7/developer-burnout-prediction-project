@@ -1,0 +1,6 @@
+pandas
+ipykernel
+pyyaml
+python-box
+ensure
+scikit-learn

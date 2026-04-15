@@ -1,0 +1,22 @@
+artifacts_root: artifacts
+
+data_ingestion:
+  root_dir: artifacts/data_ingestion
+  source_URL: https://developer-burnout-project.s3.ap-south-1.amazonaws.com/developer_burnout_dataset.zip
+  local_data_file: artifacts/data_ingestion/data.zip
+  unzip_dir: artifacts/data_ingestion
+
+data_transformation:
+  root_dir: artifacts/data_transformation
+  data_path: artifacts/data_ingestion/dataset.csv
+
+model_trainer:
+  root_dir: artifacts/model_trainer
+  data_path: artifacts/data_transformation
+  model_ckpt: artifacts/model_trainer/model.pkl
+
+model_evaluation:
+  root_dir: artifacts/model_evaluation
+  data_path: artifacts/data_transformation
+  model_path: artifacts/model_trainer/model.pkl
+  metric_file_name: artifacts/model_evaluation/metrics.csv

@@ -1,4 +1,5 @@
 import optuna
+import mlflow
 from sklearn.model_selection import cross_val_score
 
 # Models
@@ -51,26 +52,32 @@ def get_model(model_type, params):
 # objective function
 def create_objective(X, y, config):
     def objective(trial):
-        model_type = trial.suggest_categorical(
-            "model", config.models
-        )
+        with mlflow.start_run(nested=True, run_name=f"Trial_{trial.number}"):
+            model_type = trial.suggest_categorical(
+                "model", config.models
+            )
 
-        param_config = config.params.get(model_type, {})
-        params = suggest_params(trial, param_config)
+            param_config = config.params.get(model_type, {})
+            params = suggest_params(trial, param_config)
 
-        model = get_model(model_type, params)
+            model = get_model(model_type, params)
 
-        score = cross_val_score(
-            model,
-            X,
-            y,
-            cv=5,
-            scoring="accuracy"
-        ).mean()
+            score = cross_val_score(
+                model,
+                X,
+                y,
+                cv=5,
+                scoring="accuracy"
+            ).mean()
+            
+            # Log params and metrics to MLflow for each trial
+            mlflow.log_param("model_type", model_type)
+            mlflow.log_params(params)
+            mlflow.log_metric("cv_accuracy", score)
 
-        logger.info(f"Trial {trial.number} completed | Model: {model_type} | Score: {score:.4f}")
+            logger.info(f"Trial {trial.number} completed | Model: {model_type} | Score: {score:.4f}")
 
-        return score
+            return score
 
     return objective
 
@@ -88,7 +95,6 @@ def tune_model(X, y, config):
 
     best_model_type = study.best_params["model"]
 
-    # Remove model key from params
     best_params = {k: v for k, v in study.best_params.items() if k != "model"}
 
     logger.info(f"Best model found: {best_model_type}")

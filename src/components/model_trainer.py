@@ -6,6 +6,9 @@ from src.logging import logger
 from src.utils.common import create_directories
 from src.utils.model_utils import tune_model
 
+import mlflow
+import mlflow.sklearn
+
 class ModelTrainer:
     def __init__(self, config):
         self.config = config
@@ -45,9 +48,14 @@ class ModelTrainer:
         logger.info(f"Test Accuracy: {accuracy:.4f}")
         logger.info(f"Classification Report:\n{report}")
 
+        mlflow.log_param("final_best_model", result["model_type"])
+        mlflow.log_params({f"best_{k}": v for k, v in result["best_params"].items()})
+        mlflow.log_metric("final_test_accuracy", accuracy)
+
         logger.info("Saving trained model...")
 
         joblib.dump(best_model, self.config.model_ckpt)
+        mlflow.sklearn.log_model(best_model, "best_model")
 
         logger.info(f"Model saved at {self.config.model_ckpt}")
 

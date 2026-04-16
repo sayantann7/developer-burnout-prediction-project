@@ -1,0 +1,21 @@
+name: developer-burnout-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - pandas
+      - ipykernel
+      - pyyaml
+      - python-box
+      - ensure
+      - scikit-learn
+      - optuna
+      - xgboost
+      - matplotlib
+      - seaborn
+      - mlflow
+      - dagshub
+      - python-dotenv

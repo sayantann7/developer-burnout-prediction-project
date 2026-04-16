@@ -13,6 +13,7 @@ class DataIngestionConfig:
 class DataTransformationConfig:
     root_dir: Path
     data_path: Path
+    preprocessor_path: Path
 
 @dataclass
 class ModelTrainerConfig:

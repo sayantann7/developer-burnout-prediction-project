@@ -10,6 +10,8 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import mlflow
+
 class ModelEvaluation:
     def __init__(self, config):
         self.config = config
@@ -85,6 +87,10 @@ class ModelEvaluation:
 
         metrics_df = pd.DataFrame([metrics])
         metrics_df.to_csv(self.config.metric_file_name, index=False)
+
+        mlflow.log_metrics(metrics)
+        mlflow.log_artifact(cm_path, artifact_path="evaluation_plots")
+        mlflow.log_artifact(self.config.metric_file_name, artifact_path="metrics")
 
         logger.info(f"Metrics saved at {self.config.metric_file_name}")
 
